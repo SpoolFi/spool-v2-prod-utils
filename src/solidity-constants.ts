@@ -1,0 +1,2 @@
+export const FULL_PERCENT = 100_00n;
+export const YIELD_FULL_PERCENT = 100_0000000000n;
