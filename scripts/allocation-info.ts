@@ -90,7 +90,7 @@ interface InfoStatic {
     }[];
 }
 
-async function getInfo(
+export async function getInfo(
     contracts: unknown,
     rpcUrl: string,
     smartVaultAddress: string,

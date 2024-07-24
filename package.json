@@ -4,6 +4,7 @@
     "description": "Utilities for Spool v2",
     "scripts": {
         "allocation-info": "ts-node scripts/allocation-info.ts",
+        "check-reallocation": "ts-node scripts/check-reallocation.ts",
         "typecheck": "tsc --noEmit",
         "lint": "npm run lint:eslint && npm run lint:prettier",
         "lint:eslint": "eslint .",
@@ -27,6 +28,7 @@
         "typescript": "^5.5.2"
     },
     "dependencies": {
+        "@spool.fi/spool-v2-sdk": "^1.0.21",
         "commander": "^12.1.0",
         "dotenv": "^16.4.5",
         "ethers": "^6.13.1",

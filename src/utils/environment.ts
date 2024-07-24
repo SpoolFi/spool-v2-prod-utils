@@ -50,3 +50,42 @@ export function getContractsFile(environment: string): unknown {
         }
     }
 }
+
+export function getEndpoints() {
+    if (!process.env.SUBGRAPH_URL) {
+        throw new Error('Environmental variable SUBGRAPH_URL is not set.');
+    }
+    if (!process.env.PRICE_FEED_URL) {
+        throw new Error('Environmental variable PRICE_FEED_URL is not set.');
+    }
+    if (!process.env.REWARDS_URL) {
+        throw new Error('Environmental variable REWARDS_URL is not set.');
+    }
+    if (!process.env.FAST_WITHDRAW_URL) {
+        throw new Error('Environmental variable FAST_WITHDRAW_URL is not set.');
+    }
+
+    return {
+        subgraph: process.env.SUBGRAPH_URL,
+        pricefeed: process.env.PRICE_FEED_URL,
+        rewards: process.env.REWARDS_URL,
+        fastwithdraw: process.env.FAST_WITHDRAW_URL,
+    };
+}
+
+export function getChainId(environment: string): number {
+    if (!isEnvironment(environment)) {
+        throw new Error(`Unknown environment: ${environment}`);
+    }
+
+    switch (environment) {
+        case 'arbitrum':
+            return 42161;
+        case 'mainnet':
+            return 1;
+        default: {
+            const _: never = environment;
+            throw new Error(`Unknown environment: ${_}`);
+        }
+    }
+}
