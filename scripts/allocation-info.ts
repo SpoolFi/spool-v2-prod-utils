@@ -90,7 +90,7 @@ interface InfoStatic {
     }[];
 }
 
-async function getInfo(
+export async function getInfo(
     contracts: unknown,
     rpcUrl: string,
     smartVaultAddress: string,
@@ -180,11 +180,13 @@ async function getInfoDynamic(
         targetBlock,
     );
 
-    let strategyAllocationsPre = await smartVaultManager.allocations(
-        smartVaultAddress,
-        targetBlock,
-        allStrategies.length,
-    );
+    let strategyAllocationsPre = (
+        await smartVaultManager.allocations(
+            smartVaultAddress,
+            targetBlock,
+            allStrategies.length,
+        )
+    ).filter((_, i) => strategies.includes(allStrategies[i]));
     strategyAllocationsPre = normalizeAllocation(strategyAllocationsPre);
     let strategyAllocationsPost = await riskManager.calculateAllocation(
         smartVaultAddress,
