@@ -51,9 +51,25 @@ export function getContractsFile(environment: string): unknown {
     }
 }
 
-export function getEndpoints() {
-    if (!process.env.SUBGRAPH_URL) {
-        throw new Error('Environmental variable SUBGRAPH_URL is not set.');
+export function getEndpoints(environment: string) {
+    if (!isEnvironment(environment)) {
+        throw new Error(`Unknown environment: ${environment}`);
+    }
+    let subgraph = '';
+    if (environment === 'mainnet') {
+        if (!process.env.MAINNET_SUBGRAPH_URL) {
+            throw new Error(
+                'Environmental variable MAINNET_SUBGRAPH_URL is not set.',
+            );
+        }
+        subgraph = process.env.MAINNET_SUBGRAPH_URL;
+    } else if (environment === 'arbitrum') {
+        if (!process.env.ARBITRUM_SUBGRAPH_URL) {
+            throw new Error(
+                'Environmental variable ARBITRUM_SUBGRAPH_URL is not set.',
+            );
+        }
+        subgraph = process.env.ARBITRUM_SUBGRAPH_URL;
     }
     if (!process.env.PRICE_FEED_URL) {
         throw new Error('Environmental variable PRICE_FEED_URL is not set.');
@@ -66,7 +82,7 @@ export function getEndpoints() {
     }
 
     return {
-        subgraph: process.env.SUBGRAPH_URL,
+        subgraph,
         pricefeed: process.env.PRICE_FEED_URL,
         rewards: process.env.REWARDS_URL,
         fastwithdraw: process.env.FAST_WITHDRAW_URL,

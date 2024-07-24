@@ -80,7 +80,7 @@ async function main() {
         `Checking for vaults to reallocate from factory ${smartVaultFactoryAddress} on ${environment}.\nMin TVR - ${tvr}$. Desired APY gain - ${options.apy}%`,
     );
 
-    const endpoints = getEndpoints();
+    const endpoints = getEndpoints(environment);
     const chainId = getChainId(environment);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
