@@ -42,10 +42,6 @@ async function main() {
     const program = new Command();
     program
         .description('Get smart vaults which would benefit from reallocation')
-        .argument(
-            '<smart-vault-factory-address>',
-            'Address of the smart vault factory.',
-        )
         .addOption(
             new Option(
                 '-e, --environment <environment>',
@@ -71,13 +67,12 @@ async function main() {
     program.parse();
 
     const options = program.opts();
-    const smartVaultFactoryAddress = program.args[0];
     const environment = options.environment as (typeof environments)[number];
     const tvr = options.tvr as number;
-    const apy = BigInt(options.apy.concat('0000000000'));
+    const apy = BigInt(options.apy);
 
     console.log(
-        `Checking for vaults to reallocate from factory ${smartVaultFactoryAddress} on ${environment}.\nMin TVR - ${tvr}$. Desired APY gain - ${options.apy}%`,
+        `Checking for vaults to reallocate on ${environment}.\nMin TVR - ${tvr}$. Desired APY gain - ${options.apy}%`,
     );
 
     const endpoints = getEndpoints(environment);
@@ -96,7 +91,7 @@ async function main() {
                 ISmartVaultManager: contracts.SmartVaultManager.proxy,
                 IDepositManager: contracts.DepositManager.proxy,
                 IDepositSwap: contracts.DepositSwap.proxy,
-                ISmartVaultFactory: smartVaultFactoryAddress,
+                ISmartVaultFactory: contracts.SmartVaultFactory,
                 IRewardManager: contracts.RewardManager.proxy,
                 IStrategyRegistry: contracts.StrategyRegistry.proxy,
                 ISpoolLens: contracts.SpoolLens.proxy,
@@ -122,6 +117,8 @@ async function main() {
         vault: string;
         name: string;
         apyGain: string;
+        apyPre: string;
+        apyPost: string;
     }[] = [];
     for (const vault of vaults) {
         if (vaultsTVRs[vault.address] > tvr) {
@@ -134,12 +131,16 @@ async function main() {
                 );
                 if (info.type === 'dynamic') {
                     const gain =
-                        info.smartVault.apy.post - info.smartVault.apy.pre;
+                        (info.smartVault.apy.post * 100n) /
+                            info.smartVault.apy.pre -
+                        100n;
                     if (gain >= apy) {
                         vaultsForReallocation.push({
                             vault: vault.address,
                             name: vault.name,
-                            apyGain: formatApy(gain),
+                            apyGain: String(gain),
+                            apyPre: formatApy(info.smartVault.apy.pre),
+                            apyPost: formatApy(info.smartVault.apy.post),
                         });
                     }
                 } else {
